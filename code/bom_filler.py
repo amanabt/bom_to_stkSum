@@ -13,10 +13,10 @@ def read_csv(filename, delimeter = ",", skip_header = 0):
 
     return np.transpose(np.array(content))
 
-stkSum = read_csv('StkSum.csv')
+stkSum = read_csv('../Sample_Data/StkSum.csv')
 item_list = stkSum[:, 0]
 
-bom = read_csv('NVM.csv', skip_header = 8)
+bom = read_csv('../Sample_Data/NVM.csv', skip_header = 8)
 npStrDtype = '<U42'
 
 newStkSum = np.ndarray(shape = (len(stkSum), 2), dtype = npStrDtype)
