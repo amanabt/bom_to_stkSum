@@ -1,5 +1,8 @@
 import csv
 import numpy as np
+import sys
+
+npStrDtype = '<U42'
 
 def read_csv(filename, delimeter = ",", skip_header = 0):
     csv_handler = csv.reader(open(filename, newline='\n'), delimiter=delimeter)
@@ -13,18 +16,26 @@ def read_csv(filename, delimeter = ",", skip_header = 0):
 
     return np.transpose(np.array(content))
 
-stkSum = read_csv('../Sample_Data/StkSum.csv')
+print(sys.argv)
+
+stkSum = read_csv(sys.argv[1])
+
+
 item_list = stkSum[:, 0]
 
-bom = read_csv('../Sample_Data/NVM.csv', skip_header = 8)
-npStrDtype = '<U42'
 
-newStkSum = np.ndarray(shape = (len(stkSum), 2), dtype = npStrDtype)
+newStkSum = np.ndarray(shape = (len(stkSum), len(sys.argv) - 1),
+					   dtype = npStrDtype)
 newStkSum[:, 0] = item_list
 
-for idx, item in enumerate(bom[:-7, 0]):
-    if item:
-        srch_idx = np.where(item_list == item)[0][0]
-        newStkSum[srch_idx, 1] = bom[idx + 1, 1]
 
-np.savetxt("newStkSum.csv", newStkSum, delimiter="!", fmt = '%s')
+for bom_idx, bom_name in enumerate(sys.argv[2:-1]):
+	print(bom_idx, bom_name)
+	bom = read_csv(bom_name, skip_header = 8)
+	for idx, item in enumerate(bom[:-7, 0]):
+		if item:
+			srch_idx = np.where(item_list == item)
+			newStkSum[srch_idx, 1 + bom_idx] = bom[idx + 1, 1]
+
+
+np.savetxt(sys.argv[-1], newStkSum, delimiter="!", fmt = '%s')
