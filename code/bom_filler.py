@@ -9,7 +9,7 @@ HEADER_SIZE = 1
 npStrDtype = '<U42'
 
 def read_csv(filename, delimeter = ",", skip_header = 0):
-    csv_handler = csv.reader(open(filename), delimiter=delimeter)
+    csv_handler = csv.reader(open(filename, newline='\n'), delimiter=delimeter)
     csv_handler = zip(*list(csv_handler)[skip_header:])
     content = list()
 
@@ -23,12 +23,12 @@ def read_csv(filename, delimeter = ",", skip_header = 0):
 def display_filepaths():
 
 	print ("\n")
-	print "######################################################"
-	print "Stock Summary \t\t :  ", sys.argv[1]
+	print ("######################################################")
+	print ("Stock Summary \t\t :  ", sys.argv[1])
 	for bom_index, bom_name in enumerate(sys.argv[2:-1]):
-		print "BOM", bom_index, " \t\t\t : ", bom_name
-	print "Stock Flow Summary \t : ", sys.argv[-1]
-	print "######################################################"
+		print ("BOM", bom_index, " \t\t\t : ", bom_name)
+	print ("Stock Flow Summary \t : ", sys.argv[-1])
+	print ("######################################################")
 	print ("\n")
 
 
