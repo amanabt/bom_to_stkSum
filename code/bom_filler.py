@@ -22,14 +22,14 @@ def read_csv(filename, delimeter = ",", skip_header = 0):
 
 def display_filepaths():
 
-	print ("\n")
-	print ("######################################################")
-	print ("Stock Summary \t\t :  ", sys.argv[1])
-	for bom_index, bom_name in enumerate(sys.argv[2:-1]):
-		print ("BOM", bom_index, " \t\t\t : ", bom_name)
-	print ("Stock Flow Summary \t : ", sys.argv[-1])
-	print ("######################################################")
-	print ("\n")
+    print ("\n")
+    print ("######################################################")
+    print ("Stock Summary \t\t :  ", sys.argv[1])
+    for bom_index, bom_name in enumerate(sys.argv[2:-1]):
+        print ("BOM", bom_index, " \t\t\t : ", bom_name)
+    print ("Stock Flow Summary \t : ", sys.argv[-1])
+    print ("######################################################")
+    print ("\n")
 
 
 display_filepaths()
@@ -39,7 +39,7 @@ item_list = stkSum[:, 0]
 
 
 newStkSum = np.ndarray(shape = (len(stkSum)+1, len(sys.argv) - 1),
-					   dtype = npStrDtype)
+                       dtype = npStrDtype)
 
 # Reserve rows for headers
 newStkSum[0, 0] = "Stock Item"
@@ -50,14 +50,14 @@ newStkSum[1:, 0] = item_list
 # Enter stock quantities used by each BOMs
 for bom_index, bom_name in enumerate(sys.argv[2:-1]):
 
-	# Populate column heading
-	newStkSum[0, 1 + bom_index] = bom_name
+    # Populate column heading
+    newStkSum[0, 1 + bom_index] = bom_name.split("/")[-1][:-4]
 
-	bom = read_csv(bom_name, skip_header = 8)
-	for index, item in enumerate(bom[:-7, 0]):
-		if item:
-			search_index = np.where(item_list == item)
-			newStkSum[search_index[0][0]+1, 1 + bom_index] = bom[index + 1, 1]
+    bom = read_csv(bom_name, skip_header = 8)
+    for index, item in enumerate(bom[:-7, 0]):
+        if item:
+            search_index = np.where(item_list == item)
+            newStkSum[search_index[0][0]+1, 1 + bom_index] = bom[index + 1, 1]
 
 # Exported file opens with field delimiter set to '!'
 np.savetxt(sys.argv[-1], newStkSum, delimiter="!", fmt = '%s')
