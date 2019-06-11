@@ -40,11 +40,11 @@ def handle_units (value = ""):
     numbers = re.findall('\d+', value)
     #print(numbers)
     if (len(numbers) == 1):
-        return numbers[0]
+        return (numbers[0], "qty")
     elif (len(numbers) == 2):
-        return numbers[0] + "." + numbers[1]
+        return (numbers[0] + "." + numbers[1], "cm")
     elif (len(numbers) == 3):
-        return numbers[0] + "." + numbers[1] + numbers[2]
+        return (numbers[0] + "." + numbers[1] + numbers[2], "meter")
     else:
         return
 
@@ -58,7 +58,7 @@ item_list = stkSum[:, 0]
 
 
 
-newStkSum = np.ndarray(shape = (len(stkSum)+1, len(sys.argv) - 2),
+newStkSum = np.ndarray(shape = (len(stkSum)+1, len(sys.argv) - 1),
                        dtype = npStrDtype)
 
 print("Old Stock Summary: ", stkSum.shape)
@@ -69,21 +69,22 @@ newStkSum[0, 0] = "Stock Item"
 
 # Populate stock items
 newStkSum[1:, 0] = item_list
+newStkSum[0, 1] = "Units"
 
 # Enter stock quantities used by each BOMs
 for bom_index, bom_name in enumerate(sys.argv[2:-1]):
 
     # Populate column heading
-    newStkSum[0, 1 + bom_index] = bom_name.split("/")[-1][:-4]
+    newStkSum[0, 2 + bom_index] = bom_name.split("/")[-1][:-4]
 
     bom = read_csv(bom_name, skip_header = 8)
     for index, item in enumerate(bom[:-7, 0]):
         if item:
             search_index = np.where(item_list == item)
-            newStkSum[np.sum(search_index[0])+1, 1 + bom_index] = handle_units(
-                bom[index + 1, 1])
-            #value = handle_units(bom[index + 1, 1])
-            #print("->", handle_units(bom[index + 1, 1]), bom[index + 1, 1])
+            newStkSum[np.sum(search_index[0]) + 1, 2 + bom_index] = handle_units(
+                bom[index + 1, 1])[0]
+            newStkSum[np.sum(search_index[0]) + 1, 1] = handle_units(
+                bom[index + 1, 1])[1]
 
 # Exported file opens with field delimiter set to '!'
 np.savetxt(sys.argv[-1], newStkSum, delimiter="!", fmt = '%s')
