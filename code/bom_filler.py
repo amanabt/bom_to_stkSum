@@ -57,7 +57,6 @@ stkSum = read_csv(sys.argv[1])
 item_list = stkSum[:, 0]
 
 
-
 newStkSum = np.ndarray(shape = (len(stkSum)+1, len(sys.argv) - 1),
                        dtype = npStrDtype)
 
@@ -66,10 +65,14 @@ print("New Stock Summary: ", newStkSum.shape)
 
 # Reserve rows for headers
 newStkSum[0, 0] = "Stock Item"
+newStkSum[0, 1] = "Units"
 
 # Populate stock items
 newStkSum[1:, 0] = item_list
-newStkSum[0, 1] = "Units"
+for idx, item in enumerate(stkSum):
+    if (handle_units(item[1])):
+        newStkSum[idx + 1, 1] = handle_units(item[1])[1]
+    
 
 # Enter stock quantities used by each BOMs
 for bom_index, bom_name in enumerate(sys.argv[2:-1]):
@@ -83,8 +86,8 @@ for bom_index, bom_name in enumerate(sys.argv[2:-1]):
             search_index = np.where(item_list == item)
             newStkSum[np.sum(search_index[0]) + 1, 2 + bom_index] = handle_units(
                 bom[index + 1, 1])[0]
-            newStkSum[np.sum(search_index[0]) + 1, 1] = handle_units(
-                bom[index + 1, 1])[1]
+            #newStkSum[np.sum(search_index[0]) + 1, 1] = handle_units(
+                #bom[index + 1, 1])[1]
 
 # Exported file opens with field delimiter set to '!'
 np.savetxt(sys.argv[-1], newStkSum, delimiter="!", fmt = '%s')
